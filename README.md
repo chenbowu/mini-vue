@@ -16,7 +16,7 @@
 
 :white_check_mark: 环境-集成 jest 做单元测试-集成 ts
 
-:white_large_square: 实现 effect & reactive & 依赖收集 & 触发依赖
+:white_check_mark: 实现 effect & reactive & 依赖收集 & 触发依赖
 
 :white_large_square: 实现 effect 返回 runner
 
