@@ -1,5 +1,10 @@
+import { extend } from "../shared";
+
 class ReactiveEffect {
     private _fn: any;
+    deps = [];
+    active = true;
+    onStop?: () => void;
     constructor(fn, public scheduler?) {
         this._fn = fn;
     }
@@ -7,6 +12,21 @@ class ReactiveEffect {
         activeEffect = this;
         return this._fn();
     }
+    stop() {
+        if (this.active) {
+            cleanupEffect(this);
+            if (this.onStop) {
+                this.onStop();
+            }
+            this.active = false;
+        }
+    }
+}
+
+function cleanupEffect(effect: ReactiveEffect) {
+    effect.deps.forEach((dep: any) => {
+        dep.delete(effect);
+    });
 }
 
 // 定义一个依赖收集容器
@@ -30,8 +50,14 @@ export function track(target, key) {
         dep = new Set();
         depsMap.set(key, dep);
     }
+    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
+    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
+    // 所以这里直接 return
+    if (!activeEffect) return;
     // 往依赖集中添加依赖
     dep.add(activeEffect);
+    // 反向收集 dep 
+    activeEffect.deps.push(dep);
 }
 
 let activeEffect;
@@ -57,7 +83,16 @@ export function trigger(target, key) {
 
 export function effect(fn, options: any = {}) {
     const _effect = new ReactiveEffect(fn, options.scheduler);
+    extend(_effect, options);
+
     // 先执行一次 run
     _effect.run();
-    return _effect.run.bind(_effect);
+    const runner: any = _effect.run.bind(_effect);
+    // 将 effect 挂载到 runner 上，使 stop 能够通过 runner 找到 effect
+    runner.effect = _effect;
+    return runner;
+}
+
+export function stop(runner) {
+    runner.effect.stop();
 }

@@ -1,5 +1,5 @@
 import { reactive } from '../reactive';
-import { effect } from '../effect';
+import { effect, stop } from '../effect';
 
 describe('effect', () => {
     it('happy path', () => {
@@ -61,4 +61,36 @@ describe('effect', () => {
         expect(dummy).toBe(2);
     });
 
+    it('stop', () => {
+        // 实现功能: 当执行 stop 函数后，set update 时不再触发收集到的依赖
+        let dummy;
+        const obj = reactive({ prop: 1 });
+        const runner = effect(() => {
+            dummy = obj.prop;
+        });
+        obj.prop = 2;
+        expect(dummy).toBe(2);
+        stop(runner);
+        obj.prop = 3;
+        expect(dummy).toBe(2);
+
+        // stopped  effect should still be manually changes.
+        runner();
+        expect(dummy).toBe(3);
+    });
+
+    it('onStop', () => {
+        // 通过 effect 方法的第二个 options 参数传递一个函数
+        // 当调用 stop 函数时触发
+        let dummy;
+        const obj = reactive({ prop: 1 });
+        const onStop = jest.fn();
+        const runner = effect(() => {
+            dummy = obj.prop;
+        }, {
+            onStop
+        });
+        stop(runner);
+        expect(onStop).toBeCalledTimes(1);
+    });
 })
