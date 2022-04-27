@@ -24,7 +24,7 @@
 
 :white_check_mark: 实现 effect 的 stop 功能
 
-:white_large_square: 实现 readonly 功能
+:white_check_mark: 实现 readonly 功能
 
 :white_large_square: 实现 isReactive 和 isReadonly
 

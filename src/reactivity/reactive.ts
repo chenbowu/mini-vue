@@ -1,19 +1,14 @@
-import { track, trigger } from './effect';
+import { mutableHandler, readonlyHandler } from './baseHandlers';
+
 export function reactive(raw) {
-    return new Proxy(raw, {
-        get: (target, key) => {
-            const res = Reflect.get(target, key);
+    return crateActiveObject(raw, mutableHandler);
+}
 
-            // TODO 依赖收集
-            track(target, key);
-            return res;
-        },
-        set: (target, key, value) => {
-            const res = Reflect.set(target, key, value);
+export function readonly(raw) {
+    return crateActiveObject(raw, readonlyHandler);
+}
 
-            // TODO 触发依赖
-            trigger(target, key);
-            return res;
-        }
-    });
+// 增加可读性
+function crateActiveObject(raw, baseHandlers) {
+    return new Proxy(raw, baseHandlers);
 }
