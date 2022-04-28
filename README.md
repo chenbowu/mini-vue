@@ -26,7 +26,7 @@
 
 :white_check_mark: 实现 readonly 功能
 
-:white_large_square: 实现 isReactive 和 isReadonly
+:white_check_mark: 实现 isReactive 和 isReadonly
 
 :white_large_square: 优化 stop 功能
 
