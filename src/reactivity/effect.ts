@@ -1,5 +1,8 @@
 import { extend } from "../shared";
 
+let activeEffect;
+let shouldTrack;
+
 class ReactiveEffect {
     private _fn: any;
     deps = [];
@@ -10,7 +13,13 @@ class ReactiveEffect {
     }
     run() {
         activeEffect = this;
-        return this._fn();
+        if (!this.active) {
+            return this._fn();
+        }
+        shouldTrack = true;
+        const result = this._fn();
+        shouldTrack = false;
+        return result;
     }
     stop() {
         if (this.active) {
@@ -37,6 +46,13 @@ const targetMap = new Map();
  * @param key 
  */
 export function track(target, key) {
+    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
+    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
+    // 所以这里直接 return
+    if (!activeEffect) return;
+    // 执行 stop 后，active 状态为 false 不进行依赖收集
+    if (!shouldTrack) return;
+
     // 根据目标对象获取所收集的依赖集
     let depsMap = targetMap.get(target);
     if (!depsMap) {
@@ -50,17 +66,11 @@ export function track(target, key) {
         dep = new Set();
         depsMap.set(key, dep);
     }
-    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
-    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
-    // 所以这里直接 return
-    if (!activeEffect) return;
     // 往依赖集中添加依赖
     dep.add(activeEffect);
     // 反向收集 dep 
     activeEffect.deps.push(dep);
 }
-
-let activeEffect;
 
 /**
  * 触发依赖
