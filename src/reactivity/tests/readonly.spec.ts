@@ -11,6 +11,8 @@ describe('readonly', () => {
         // isReadonly
         expect(isReadonly(wrapped)).toBe(true);
         expect(isReadonly(original)).toBe(false);
+        expect(isReadonly(original.bar)).toBe(false);
+        expect(isReadonly(wrapped.bar)).toBe(true);
     });
 
     it('warn then call set', () => {

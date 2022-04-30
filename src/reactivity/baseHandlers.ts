@@ -1,5 +1,6 @@
+import { isObject } from "../shared";
 import { track, trigger } from "./effect";
-import { ReactiveFlags } from "./reactive";
+import { reactive, ReactiveFlags, readonly } from "./reactive";
 
 // 优化性能，缓存 get set
 const get = createGetter();
@@ -20,6 +21,12 @@ function createGetter (isReadonly = false) {
         const res = Reflect.get(target, key);
         if (!isReadonly) {
             track(target, key);
+        }
+        
+        // 嵌套对象转换成响应式对象
+        // 当属性值为对象时，调用 reactive 转换成响应式对象返回出去。
+        if (isObject(res)) {
+            return isReadonly ? readonly(res) : reactive(res);
         }
         return res;
     }
