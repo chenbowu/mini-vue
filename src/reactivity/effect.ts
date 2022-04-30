@@ -1,7 +1,7 @@
 import { extend } from "../shared";
 
 let activeEffect;
-let shouldTrack;
+let shouldTrack = false;
 
 class ReactiveEffect {
     private _fn: any;
@@ -55,6 +55,14 @@ const targetMap = new Map();
  * @param key 
  */
 export function track(target, key) {
+    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
+    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
+    // 所以这里直接 return
+    // if (!activeEffect) return;
+    // // 执行 stop 后，active 状态为 false 不进行依赖收集
+    // if (!shouldTrack) return;
+    if (!isTracking()) return;;
+
     // 根据目标对象获取所收集的依赖集
     let depsMap = targetMap.get(target);
     if (!depsMap) {
@@ -69,18 +77,16 @@ export function track(target, key) {
         depsMap.set(key, dep);
     }
 
-    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
-    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
-    // 所以这里直接 return
-    if (!activeEffect) return;
-    // 执行 stop 后，active 状态为 false 不进行依赖收集
-    if (!shouldTrack) return;
-
+    if (dep.has(activeEffect)) return;
     // 往依赖集中添加依赖
     dep.add(activeEffect);
     // 将当前依赖集挂到依赖对象上, 这样可以通过依赖对象找到所在依赖集
     // 执行 stop 时就可以找到对应的依赖集，并且将当前依赖对象从中删除
     activeEffect.deps.push(dep);
+}
+
+function isTracking() {
+    return shouldTrack && activeEffect !== undefined;
 }
 
 /**
@@ -91,6 +97,7 @@ export function track(target, key) {
 export function trigger(target, key) {
     const depsMap = targetMap.get(target);
     const dep = depsMap.get(key);
+    // 如果是来自 effect 的 set 就不触发 trigger
 
     // 遍历执行收集的依赖
     for (const effect of dep) {

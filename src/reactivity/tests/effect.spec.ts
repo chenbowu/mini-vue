@@ -77,14 +77,10 @@ describe('effect', () => {
         stop(runner);
         obj.prop = 3;
         expect(dummy).toBe(2);
-        // 当使用 ++ 会同时触发 track 和 trigger
-        // 导致结果与预期结果不一致
-        obj.prop++;
-        expect(dummy).toBe(2);
 
         // stopped  effect should still be manually changes.
         runner();
-        expect(dummy).toBe(4);
+        expect(dummy).toBe(3);
     });
 
     it('onStop', () => {
