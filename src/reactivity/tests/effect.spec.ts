@@ -12,6 +12,10 @@ describe('effect', () => {
             // 此处执行了一次 get 触发了 track 
             nextAge = user.age + 1;
         });
+        // TODO 在依赖中执行一元运算符，会导致 track trigger 重复调用，导致调用栈溢出
+        // effect(() => {
+        //     user.age++;
+        // });
 
         expect(nextAge).toBe(11);
         // update

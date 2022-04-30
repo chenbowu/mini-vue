@@ -23,7 +23,7 @@ class ReactiveEffect {
         // 并执行 fn，当 fn 中触发 get 操作时行将会进行依赖收集
         shouldTrack = true;
         const result = this._fn();
-        // 因为 shouldTrack 为全局变量，所以这里需要将 shouldTrack 重置为 false
+        // 因为 shouldTrack 为全局变量，这里需要将 shouldTrack 重置为 false
         shouldTrack = false;
         // 执行 fn 时, 触发 track 收集依赖
         return result;
@@ -43,6 +43,7 @@ function cleanupEffect(effect: ReactiveEffect) {
     effect.deps.forEach((dep: any) => {
         dep.delete(effect);
     });
+    // TODO Why 为什么不直接设置为 0, GC 不会自动回收吗？
     effect.deps.length = 0;
 }
 
@@ -77,7 +78,8 @@ export function track(target, key) {
 
     // 往依赖集中添加依赖
     dep.add(activeEffect);
-    // 反向收集 dep 
+    // 将当前依赖集挂到依赖对象上, 这样可以通过依赖对象找到所在依赖集
+    // 执行 stop 时就可以找到对应的依赖集，并且将当前依赖对象从中删除
     activeEffect.deps.push(dep);
 }
 

@@ -28,7 +28,7 @@
 
 :white_check_mark: 实现 isReactive 和 isReadonly
 
-:white_large_square: 优化 stop 功能
+:white_check_mark: 优化 stop 功能
 
 :white_large_square: 实现 reactive 和 readonly 嵌套对象转换功能
 
