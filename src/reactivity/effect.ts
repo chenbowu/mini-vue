@@ -13,12 +13,19 @@ class ReactiveEffect {
     }
     run() {
         activeEffect = this;
+        // 在执行了 stop 后会将 active 设置为 false
+        // 如果当前响应式对象 active 为 false, 就不进行依赖收集 
+        // shouldTrack 默认为 false
         if (!this.active) {
             return this._fn();
         }
+        // 当 active 为 true 时，将 shouldTrack 设置为 true，
+        // 并执行 fn，当 fn 中触发 get 操作时行将会进行依赖收集
         shouldTrack = true;
         const result = this._fn();
+        // 因为 shouldTrack 为全局变量，所以这里需要将 shouldTrack 重置为 false
         shouldTrack = false;
+        // 执行 fn 时, 触发 track 收集依赖
         return result;
     }
     stop() {
@@ -36,6 +43,7 @@ function cleanupEffect(effect: ReactiveEffect) {
     effect.deps.forEach((dep: any) => {
         dep.delete(effect);
     });
+    effect.deps.length = 0;
 }
 
 // 定义一个依赖收集容器
@@ -46,13 +54,6 @@ const targetMap = new Map();
  * @param key 
  */
 export function track(target, key) {
-    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
-    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
-    // 所以这里直接 return
-    if (!activeEffect) return;
-    // 执行 stop 后，active 状态为 false 不进行依赖收集
-    if (!shouldTrack) return;
-
     // 根据目标对象获取所收集的依赖集
     let depsMap = targetMap.get(target);
     if (!depsMap) {
@@ -66,6 +67,14 @@ export function track(target, key) {
         dep = new Set();
         depsMap.set(key, dep);
     }
+
+    // 只有在执行 effect 时调用 run 后 activeEffect 才会有值
+    // 当对象 get 时，会触发 track，由于没有执行 effect 此时 activeEffect 为空。
+    // 所以这里直接 return
+    if (!activeEffect) return;
+    // 执行 stop 后，active 状态为 false 不进行依赖收集
+    if (!shouldTrack) return;
+
     // 往依赖集中添加依赖
     dep.add(activeEffect);
     // 反向收集 dep 
