@@ -38,7 +38,7 @@
 
 :white_check_mark: 实现 ref 功能
 
-:white_large_square: 实现 isRef 和 unRef 功能
+:white_check_mark: 实现 isRef 和 unRef 功能
 
 :white_large_square: 实现 proxyRefs 功能
 

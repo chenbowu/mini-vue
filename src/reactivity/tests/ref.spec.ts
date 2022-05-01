@@ -1,5 +1,6 @@
 import { effect } from "../effect";
-import { ref } from "../ref";
+import { isReactive, reactive } from "../reactive";
+import { isRef, ref, unRef } from "../ref";
 
 describe('ref', () => {
     // # ref 的功能点
@@ -53,4 +54,18 @@ describe('ref', () => {
         a.value = { bar: 1 };
         expect(dummy).toBe(undefined);
     });
+
+    it('isRef', () => {
+        const a = ref(1);
+        const observed = reactive({ foo: 1 });
+        expect(isRef(a)).toBe(true);
+        expect(isRef(1)).toBe(false);
+        expect(isRef(observed)).toBe(false);
+    });
+
+    it('unRef', () => {
+        const a = ref(1);
+        expect(unRef(a)).toBe(1);
+        expect(1).toBe(1);
+    })
 });
