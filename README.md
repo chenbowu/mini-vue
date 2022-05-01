@@ -34,7 +34,7 @@
 
 :white_check_mark: 实现 shallowReadonly 功能
 
-:white_large_square: 实现 isProxy 功能
+:white_check_mark: 实现 isProxy 功能
 
 :white_large_square: 实现 ref 功能
 
