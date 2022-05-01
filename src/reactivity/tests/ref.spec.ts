@@ -1,6 +1,6 @@
 import { effect } from "../effect";
 import { isReactive, reactive } from "../reactive";
-import { isRef, ref, unRef } from "../ref";
+import { isRef, proxyRefs, ref, unRef } from "../ref";
 
 describe('ref', () => {
     // # ref 的功能点
@@ -68,4 +68,26 @@ describe('ref', () => {
         expect(unRef(a)).toBe(1);
         expect(1).toBe(1);
     })
+
+    it('proxyRefs', () => {
+        const user:any = {
+            age: ref(10),
+            name: 'antony'
+        }
+        const proxyUser = proxyRefs(user);
+        expect(user.age.value).toBe(10);
+        expect(proxyUser.age).toBe(10);
+        expect(proxyUser.name).toBe('antony');
+
+        proxyUser.age = 20;
+        expect(proxyUser.age).toBe(20);
+        expect(user.age.value).toBe(20);
+
+        proxyUser.age = ref(10);
+        proxyUser.name = ref('pony');
+        expect(proxyUser.age).toBe(10);
+        expect(user.age.value).toBe(10);
+        expect(proxyUser.name).toBe('pony');
+        expect(user.name.value).toBe('pony');
+    });
 });

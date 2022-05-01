@@ -42,3 +42,22 @@ export function isRef(ref) {
 export function unRef(ref) {
     return isRef(ref) ? ref.value : ref;
 }
+
+export function proxyRefs(objectWithRefs) {
+    return new Proxy(objectWithRefs, {
+        get: (target, key) => {
+            return unRef(Reflect.get(target, key));
+        },
+        set: (target, key, value) => {
+            // 如果目标属性为 ref 对象，且传入的值不是一个 ref 对象，就通过 value 属性进行赋值
+            // isRef(target[key]) && isRef(value) => 直接赋值
+            // isRef(target[key]) && !isRef(value) => 通过 value 属性赋值
+            // !isRef(target[key]) => 直接赋值
+            if (isRef(target[key]) && !isRef(value)) {
+                return target[key].value = value;
+            } else {
+                return Reflect.set(target, key, value);
+            }
+        }
+    });
+}
