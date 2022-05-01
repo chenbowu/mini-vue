@@ -76,7 +76,10 @@ export function track(target, key) {
         dep = new Set();
         depsMap.set(key, dep);
     }
+    trackEffects(dep);
+}
 
+export function trackEffects(dep) {
     if (dep.has(activeEffect)) return;
     // 往依赖集中添加依赖
     dep.add(activeEffect);
@@ -85,20 +88,7 @@ export function track(target, key) {
     activeEffect.deps.push(dep);
 }
 
-function isTracking() {
-    return shouldTrack && activeEffect !== undefined;
-}
-
-/**
- * 触发依赖
- * @param target 
- * @param key 
- */
-export function trigger(target, key) {
-    const depsMap = targetMap.get(target);
-    const dep = depsMap.get(key);
-    // 如果是来自 effect 的 set 就不触发 trigger
-
+export function triggerEffects(dep) {
     // 遍历执行收集的依赖
     for (const effect of dep) {
         if (effect.scheduler) {
@@ -107,6 +97,17 @@ export function trigger(target, key) {
             effect.run();
         }
     }
+}
+
+export function isTracking() {
+    return shouldTrack && activeEffect !== undefined;
+}
+
+export function trigger(target, key) {
+    const depsMap = targetMap.get(target);
+    const dep = depsMap.get(key);
+    // 如果是来自 effect 的 set 就不触发 trigger
+    triggerEffects(dep);
 }
 
 export function effect(fn, options: any = {}) {
