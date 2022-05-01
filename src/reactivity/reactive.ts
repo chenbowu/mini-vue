@@ -1,4 +1,4 @@
-import { mutableHandler, readonlyHandler } from './baseHandlers';
+import { mutableHandlers, readonlyHandlers, shallowReadonlyHandlers } from './baseHandlers';
 
 export const enum ReactiveFlags {
     IS_REACTIVE = '__v_isReactive',
@@ -6,11 +6,15 @@ export const enum ReactiveFlags {
 }
 
 export function reactive(raw) {
-    return crateActiveObject(raw, mutableHandler);
+    return crateActiveObject(raw, mutableHandlers);
 }
 
 export function readonly(raw) {
-    return crateActiveObject(raw, readonlyHandler);
+    return crateActiveObject(raw, readonlyHandlers);
+}
+
+export function shallowReadonly(raw) {
+    return crateActiveObject(raw, shallowReadonlyHandlers);
 }
 
 // 增加可读性

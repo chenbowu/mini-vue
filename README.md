@@ -32,7 +32,7 @@
 
 :white_check_mark: 实现 reactive 和 readonly 嵌套对象转换功能
 
-:white_large_square: 实现 shallowReadonly 功能
+:white_check_mark: 实现 shallowReadonly 功能
 
 :white_large_square: 实现 isProxy 功能
 
