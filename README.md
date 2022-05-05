@@ -46,11 +46,11 @@
 
 ### **runtime-core 初始化**
 
-:white_check_mark: 实现初始化 component 主流程
+:white_large_square: 实现初始化 component 主流程
 
-:white_check_mark: 使用 rollup 打包库
+:white_large_square: 使用 rollup 打包库
 
-:white_check_mark: 实现初始化 element 主流程
+:white_large_square: 实现初始化 element 主流程
 
 :white_large_square: 实现组件代理对象
 
