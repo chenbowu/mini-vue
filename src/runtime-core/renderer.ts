@@ -51,12 +51,13 @@ function mountComponent(vnode, container) {
 function createComponentInstance(vnode: any) {
     const component = {
         vnode,
-        type: vnode.type
+        type: vnode.type,
+        setupState: {}
     };
     return component;
 }
 function setupRenderEffect(instance: any, container) {
-    const subTree = instance.render();
+    const subTree = instance.render.call(instance.proxy);
     patch(subTree, container);
 }
 
