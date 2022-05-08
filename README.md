@@ -52,7 +52,7 @@
 
 :white_check_mark: 实现初始化 element 主流程
 
-:white_large_square: 实现组件代理对象
+:white_check_mark: 实现组件代理对象
 
 :white_large_square: 实现 shapeFlags
 
