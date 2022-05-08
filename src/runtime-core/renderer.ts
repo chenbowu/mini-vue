@@ -1,4 +1,3 @@
-import { isObject } from "../shared";
 import { setupComponent } from "./component";
 
 export function render(vnode: any, container: any) {
@@ -7,9 +6,10 @@ export function render(vnode: any, container: any) {
 }
 function patch(vnode: any, container: any) {
     // 判断是 vnode 类型是 component 还是 element
-    if (typeof vnode.type === "string") {
+    const sharpFlag = vnode.sharpFlag;
+    if (sharpFlag & SharpFlags.ELEMENT) {
         processElement(vnode, container);
-    } else if (isObject(vnode.type)) {
+    } else if (sharpFlag & SharpFlags.STATEFUL_COMPONENT) {
         processComponent(vnode, container);
     }
 }
@@ -24,9 +24,10 @@ function mountElement(vnode: any, container: any) {
         el.setAttribute(key, vnode.props[key]);
     }
 
-    if (typeof vnode.children === "string") {
+    const sharpFlag = vnode.sharpFlag;
+    if (sharpFlag & SharpFlags.TEXT_CHILDREN) {
         el.textContent = vnode.children;
-    } else if (Array.isArray(vnode.children)) {
+    } else if (sharpFlag & SharpFlags.ARRAY_CHILDREN) {
         mountChildren(vnode, el);
     };
     container.append(el);

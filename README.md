@@ -54,7 +54,7 @@
 
 :white_check_mark: 实现组件代理对象
 
-:white_large_square: 实现 shapeFlags
+:white_check_mark: 实现 shapeFlags
 
 :white_large_square: 实现注册事件功能
 
