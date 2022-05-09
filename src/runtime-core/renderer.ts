@@ -1,3 +1,4 @@
+import { isOn } from "../shared";
 import { setupComponent } from "./component";
 
 export function render(vnode: any, container: any) {
@@ -21,7 +22,12 @@ function processElement(vnode: any, container) {
 function mountElement(vnode: any, container: any) {
     const el = vnode.el = document.createElement(vnode.type);
     for (let key in vnode.props) {
-        el.setAttribute(key, vnode.props[key]);
+        if (isOn(key)) {
+            let event = key.slice(2).toLowerCase();
+            el.addEventListener(event, vnode.props[key]);
+        } else {
+            el.setAttribute(key, vnode.props[key]);
+        }
     }
 
     const sharpFlag = vnode.sharpFlag;
