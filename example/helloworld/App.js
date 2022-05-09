@@ -1,4 +1,5 @@
 import { h } from '../../lib/guide-mini-vue.esm.js';
+import { Foo } from './Foo.js';
 export const App = {
     // template 最终会编译成 render 函数
     render() {
@@ -18,7 +19,10 @@ export const App = {
             onMouseDown() {
                 console.log('div mousedown');
             }
-        }, 'hello ' + this.msg);
+        }, [
+            h('div', {}, 'hello ' + this.msg),
+            h(Foo, { count: 1 })
+        ]);
     },
     setup() {
         // composition api
