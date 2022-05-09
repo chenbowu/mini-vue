@@ -18,9 +18,9 @@ export function createVNode(type, props?, children?) {
 }
 
 function getSharpFlag(type) {
-    if (typeof type === 'string' ) {
+    if (typeof type === 'string') {
         return SharpFlags.ELEMENT;
-    } else if (isObject(type)) {
+    } else {
         return SharpFlags.STATEFUL_COMPONENT;
     }
 }
