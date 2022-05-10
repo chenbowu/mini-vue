@@ -60,7 +60,7 @@
 
 :white_check_mark: 实现组件 props 功能
 
-:white_large_square: 实现组件 emit 功能
+:white_check_mark: 实现组件 emit 功能
 
 :white_large_square: 实现组件 slots 功能
 

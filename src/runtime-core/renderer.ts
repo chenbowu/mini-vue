@@ -1,5 +1,6 @@
 import { isOn } from "../shared";
 import { setupComponent } from "./component";
+import { emit } from "./componentEmit";
 
 export function render(vnode: any, container: any) {
     // 直接调用 patch 方法
@@ -61,8 +62,10 @@ function createComponentInstance(vnode: any) {
         vnode,
         type: vnode.type,
         setupState: {},
-        props: {}
+        props: {},
+        emit: () => {}
     };
+    component.emit = emit.bind(null, component) as any;
     return component;
 }
 function setupRenderEffect(instance: any, container) {

@@ -22,7 +22,9 @@ function setupStatefulComponent(instance: any) {
         // setup 允许返回 function & object
         // 如果返回的是 function 那就是一个 render 函数
         // 如果返回的是 object 那将这个 object 注入进组件实例的上下文中
-        const setupResult = setup(shallowReadonly(instance.props));
+        const setupResult = setup(shallowReadonly(instance.props), {
+            emit: instance.emit
+        });
         handleSetupResult(instance, setupResult);
     }
 }
