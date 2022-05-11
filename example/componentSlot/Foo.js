@@ -1,4 +1,4 @@
-import { h } from "../../lib/guide-mini-vue.esm.js";
+import { h, renderSlots } from "../../lib/guide-mini-vue.esm.js";
 
 export const Foo = {
     name: 'Foo',
@@ -7,6 +7,7 @@ export const Foo = {
     render() {
         const foo = h('p', {}, 'foo');
         console.log(this.$slots);
-        return h('div', {}, [foo, this.$slots]);
+        // 实现具名插槽
+        return h('div', {}, [renderSlots(this.$slots, 'header'), foo, renderSlots(this.$slots, 'footer')]);
     }
 };
