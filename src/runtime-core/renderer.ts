@@ -63,6 +63,7 @@ function createComponentInstance(vnode: any) {
         type: vnode.type,
         setupState: {},
         props: {},
+        slots: {},
         emit: () => {}
     };
     component.emit = emit.bind(null, component) as any;

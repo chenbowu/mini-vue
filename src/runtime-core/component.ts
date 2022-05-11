@@ -1,11 +1,11 @@
 import { shallowReadonly } from "../reactivity/reactive";
 import { initProps } from "./componentProps";
 import { PublicInstanceProxyHandlers } from "./componentPublicInstance";
+import { initSlots } from "./componentSlots";
 
 export function setupComponent(instance: any) {
     initProps(instance, instance.vnode.props);
-    // TODO 后面再实现
-    // init slots
+    initSlots(instance, instance.vnode.children);
     setupStatefulComponent(instance);
 }
 
@@ -23,7 +23,8 @@ function setupStatefulComponent(instance: any) {
         // 如果返回的是 function 那就是一个 render 函数
         // 如果返回的是 object 那将这个 object 注入进组件实例的上下文中
         const setupResult = setup(shallowReadonly(instance.props), {
-            emit: instance.emit
+            emit: instance.emit,
+            props: instance.props
         });
         handleSetupResult(instance, setupResult);
     }
