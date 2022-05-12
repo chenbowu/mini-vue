@@ -1,19 +1,23 @@
 {
   "name": "mini-vue",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
+    "@antfu/eslint-config": "^0.23.0",
     "@babel/core": "^7.17.9",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@rollup/plugin-typescript": "^8.3.2",
     "@types/jest": "^27.4.1",
     "babel-jest": "^27.5.1",
+    "eslint": "^8.15.0",
     "jest": "^27.5.1",
     "rollup": "^2.71.1",
     "tslib": "^2.4.0",
