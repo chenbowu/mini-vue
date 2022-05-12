@@ -1,17 +1,19 @@
-import { h } from "../../lib/guide-mini-vue.esm.js";
-import { Foo } from "./Foo.js";
+import { h } from '../../lib/guide-mini-vue.esm.js'
+import { Foo } from './Foo.js'
 
 export const App = {
-    name: 'App',
-    setup() {
+  name: 'App',
+  setup() {
 
+  },
+  render() {
+    const app = h('div', {}, 'App')
+    const foo = h(Foo, {}, {
+      header: h('p', {}, 'header'),
+      main: h('p', {}, 'main'),
+      footer: h('p', {}, 'footer'),
     },
-    render() {
-        const app = h('div', {}, 'App');
-        const foo = h(Foo, {}, {
-             header: h('p', {}, 'header'), 
-             footer: h('p', {}, 'footer') }
-        );
-        return h('div', {}, [app, foo]);
-    }
+    )
+    return h('div', {}, [app, foo])
+  },
 }

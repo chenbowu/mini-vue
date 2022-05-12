@@ -1,26 +1,25 @@
-import { isObject } from "../shared";
+import { SharpFlags } from '../shared/SharpFlags'
 
 export function createVNode(type, props?, children?) {
-    const vnode = {
-        type, 
-        props,
-        children,
-        el: null,
-        sharpFlag: getSharpFlag(type)
-    }
+  const vnode = {
+    type,
+    props,
+    children,
+    el: null,
+    sharpFlag: getSharpFlag(type),
+  }
 
-    if (typeof children === 'string') {
-        vnode.sharpFlag |= SharpFlags.TEXT_CHILDREN;
-    } else if (Array.isArray(children)) {
-        vnode.sharpFlag |= SharpFlags.ARRAY_CHILDREN;
-    }
-    return vnode;
+  if (typeof children === 'string')
+    vnode.sharpFlag |= SharpFlags.TEXT_CHILDREN
+  else if (Array.isArray(children))
+    vnode.sharpFlag |= SharpFlags.ARRAY_CHILDREN
+
+  return vnode
 }
 
 function getSharpFlag(type) {
-    if (typeof type === 'string') {
-        return SharpFlags.ELEMENT;
-    } else {
-        return SharpFlags.STATEFUL_COMPONENT;
-    }
+  if (typeof type === 'string')
+    return SharpFlags.ELEMENT
+  else
+    return SharpFlags.STATEFUL_COMPONENT
 }
