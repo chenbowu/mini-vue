@@ -9,11 +9,10 @@ export const App = {
   render() {
     const app = h('div', {}, 'App')
     const foo = h(Foo, {}, {
-      header: h('p', {}, 'header'),
-      main: h('p', {}, 'main'),
-      footer: h('p', {}, 'footer'),
-    },
-    )
+      header: ({ age }) => h('p', {}, `header${age}`),
+      main: () => h('p', {}, 'main'),
+      footer: () => h('p', {}, 'footer'),
+    })
     return h('div', {}, [app, foo])
   },
 }

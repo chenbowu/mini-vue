@@ -1,9 +1,15 @@
-import { h } from '../h'
+import { createVNode } from '../vnode'
 
-export function renderSlots(slots, name) {
+/**
+ * Convert children to vnode
+ * @param slots
+ * @param name
+ * @param props
+ */
+export function renderSlots(slots, name, props) {
   const slot = slots[name]
-  if (slot)
-    return h('div', {}, slot)
-
-  // return h('div', {}, slots[name]);
+  if (slot) {
+    if (typeof slot === 'function')
+      return createVNode('div', {}, slot(props))
+  }
 }

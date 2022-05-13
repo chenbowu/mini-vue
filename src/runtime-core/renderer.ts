@@ -1,4 +1,5 @@
 import { isOn } from '../shared'
+import { SharpFlags } from '../shared/SharpFlags'
 import { setupComponent } from './component'
 import { emit } from './componentEmit'
 
