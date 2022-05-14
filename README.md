@@ -66,7 +66,7 @@
 
 :white_check_mark: 实现 Fragment 和 Text 类型节点
 
-:white_large_square: 实现 getCurrentInstance
+:white_check_mark: 实现 getCurrentInstance
 
 :white_large_square: 实现依赖注入功能（provide/inject）
 

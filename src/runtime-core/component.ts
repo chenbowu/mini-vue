@@ -3,6 +3,7 @@ import { initProps } from './componentProps'
 import { PublicInstanceProxyHandlers } from './componentPublicInstance'
 import { initSlots } from './componentSlots'
 
+let currentInstance = null
 export function setupComponent(instance: any) {
   initProps(instance, instance.vnode.props)
   initSlots(instance, instance.vnode.children)
@@ -16,6 +17,7 @@ function setupStatefulComponent(instance: any) {
   instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers)
 
   const { setup } = Component
+  currentInstance = instance
   // 使用者可能不会写 setup，所以这里需要做判断
   if (setup) {
     // setup 允许返回 function & object
@@ -27,6 +29,7 @@ function setupStatefulComponent(instance: any) {
     })
     handleSetupResult(instance, setupResult)
   }
+  currentInstance = null
 }
 
 function handleSetupResult(instance, setupResult: any) {
@@ -34,7 +37,7 @@ function handleSetupResult(instance, setupResult: any) {
     instance.setupState = setupResult
   }
   else if (setupResult instanceof Function) {
-
+    // 待实现
   }
   // 设置 render
   finishSetupComponent(instance)
@@ -45,4 +48,8 @@ function finishSetupComponent(instance: any) {
   // 将组件上的 render 函数,挂载到实例上
   if (Component.render)
     instance.render = Component.render
+}
+
+export function getCurrentInstance() {
+  return currentInstance
 }
