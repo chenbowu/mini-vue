@@ -2,6 +2,7 @@ import { isOn } from '../shared'
 import { SharpFlags } from '../shared/SharpFlags'
 import { setupComponent } from './component'
 import { emit } from './componentEmit'
+import { Fragment, Text } from './vnode'
 
 export function render(vnode: any, container: any) {
   // 直接调用 patch 方法
@@ -10,14 +11,34 @@ export function render(vnode: any, container: any) {
 function patch(vnode: any, container: any) {
   // 判断是 vnode 类型是 component 还是 element
   const sharpFlag = vnode.sharpFlag
-  if (sharpFlag & SharpFlags.ELEMENT)
-    processElement(vnode, container)
-  else if (sharpFlag & SharpFlags.STATEFUL_COMPONENT)
-    processComponent(vnode, container)
+  switch (vnode.type) {
+    case Fragment:
+      processFragment(vnode, container)
+      break
+    case Text:
+      processText(vnode, container)
+      break
+    default:
+      if (sharpFlag & SharpFlags.ELEMENT)
+        processElement(vnode, container)
+      else if (sharpFlag & SharpFlags.STATEFUL_COMPONENT)
+        processComponent(vnode, container)
+      break
+  }
 }
 
 function processElement(vnode: any, container) {
   mountElement(vnode, container)
+}
+
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode, container)
+}
+
+function processText(vnode: any, container: any) {
+  const { children } = vnode
+  const textNode = vnode.el = document.createTextNode(children)
+  container.append(textNode)
 }
 
 function mountElement(vnode: any, container: any) {
@@ -74,4 +95,3 @@ function setupRenderEffect(instance: any, container) {
   patch(subTree, container)
   instance.vnode.el = subTree.el
 }
-

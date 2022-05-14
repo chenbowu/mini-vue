@@ -1,5 +1,7 @@
 import { SharpFlags } from '../shared/SharpFlags'
 
+export const Fragment = Symbol('Fragment')
+export const Text = Symbol('Text')
 export function createVNode(type, props?, children?) {
   const vnode = {
     type,
@@ -27,4 +29,8 @@ function getSharpFlag(type) {
     return SharpFlags.ELEMENT
   else
     return SharpFlags.STATEFUL_COMPONENT
+}
+
+export function createTextVNode(text) {
+  return createVNode(Text, {}, text)
 }

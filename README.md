@@ -64,7 +64,7 @@
 
 :white_check_mark: 实现组件 slots 功能
 
-:white_large_square: 实现 Fragment 和 Text 类型节点
+:white_check_mark: 实现 Fragment 和 Text 类型节点
 
 :white_large_square: 实现 getCurrentInstance
 
