@@ -17,7 +17,7 @@ function setupStatefulComponent(instance: any) {
   instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers)
 
   const { setup } = Component
-  currentInstance = instance
+  setCurrentInstance(instance)
   // 使用者可能不会写 setup，所以这里需要做判断
   if (setup) {
     // setup 允许返回 function & object
@@ -29,7 +29,7 @@ function setupStatefulComponent(instance: any) {
     })
     handleSetupResult(instance, setupResult)
   }
-  currentInstance = null
+  setCurrentInstance(null)
 }
 
 function handleSetupResult(instance, setupResult: any) {
@@ -52,4 +52,8 @@ function finishSetupComponent(instance: any) {
 
 export function getCurrentInstance() {
   return currentInstance
+}
+
+function setCurrentInstance(instance) {
+  currentInstance = instance
 }
