@@ -68,7 +68,7 @@
 
 :white_check_mark: 实现 getCurrentInstance
 
-:white_large_square: 实现依赖注入功能（provide/inject）
+:white_check_mark: 实现依赖注入功能（provide/inject）
 
 :white_large_square: 实现自定义渲染器 custom renderer
 
