@@ -70,7 +70,7 @@
 
 :white_check_mark: 实现依赖注入功能（provide/inject）
 
-:white_large_square: 实现自定义渲染器 custom renderer
+:white_check_mark: 实现自定义渲染器 custom renderer
 
 ### runtime-core 更新
 

@@ -1,11 +1,15 @@
-import { isOn } from '../shared'
 import { SharpFlags } from '../shared/SharpFlags'
 import { setupComponent } from './component'
 import { emit } from './componentEmit'
+import { createAppAPI } from './createApp'
 import { Fragment, Text } from './vnode'
 
 export function createRenderer(options) {
-  const { createElement, patchProp, insert } = options
+  const {
+    createElement: hostCreateElement,
+    patchProp: hostPatchProp,
+    insert: hostInsert,
+  } = options
 
   function render(vnode: any, container: any) {
   // 直接调用 patch 方法
@@ -45,16 +49,9 @@ export function createRenderer(options) {
   }
 
   function mountElement(vnode: any, container: any, parentComponent) {
-    const el = vnode.el = document.createElement(vnode.type)
+    const el = vnode.el = hostCreateElement(vnode.type)
     for (const key in vnode.props)
-      patchProp(el, key, vnode.props[key])
-      // if (isOn(key)) {
-      //   const event = key.slice(2).toLowerCase()
-      //   el.addEventListener(event, vnode.props[key])
-      // }
-      // else {
-      //   el.setAttribute(key, vnode.props[key])
-      // }
+      hostPatchProp(el, key, vnode.props[key])
 
     const sharpFlag = vnode.sharpFlag
     if (sharpFlag & SharpFlags.TEXT_CHILDREN)
@@ -62,7 +59,7 @@ export function createRenderer(options) {
     else if (sharpFlag & SharpFlags.ARRAY_CHILDREN)
       mountChildren(vnode, el, parentComponent)
 
-    container.append(el)
+    hostInsert(el, container)
   }
 
   function mountChildren(vnode: any, container, parentComponent) {
@@ -100,5 +97,9 @@ export function createRenderer(options) {
     const subTree = instance.render.call(instance.proxy)
     patch(subTree, container, instance)
     instance.vnode.el = subTree.el
+  }
+
+  return {
+    createApp: createAppAPI(render),
   }
 }

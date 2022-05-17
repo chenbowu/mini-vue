@@ -1,26 +1,32 @@
-import { createRenderer } from '../runtime-core/renderer'
+import { createRenderer } from '../runtime-core'
 import { isOn } from '../shared'
 
 function createElement(type) {
   return document.createElement(type)
 }
 
-function patchProp(el, key, value) {
+function patchProp(el, key, val) {
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase()
-    el.addEventListener(event, value)
+    el.addEventListener(event, val)
   }
   else {
-    el.setAttribute(key, value)
+    el.setAttribute(key, val)
   }
 }
 
-function insert(conatiner, el) {
-  conatiner.append(el)
+function insert(el, parent) {
+  parent.append(el)
 }
 
-createRenderer({
+export const renderer: any = createRenderer({
   createElement,
   patchProp,
   insert,
 })
+
+export function createApp(...arg) {
+  return renderer.createApp(...arg)
+}
+
+export * from '../runtime-core'
