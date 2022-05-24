@@ -1,3 +1,4 @@
+import { effect } from '../reactivity/effect'
 import { SharpFlags } from '../shared/SharpFlags'
 import { setupComponent } from './component'
 import { emit } from './componentEmit'
@@ -13,38 +14,49 @@ export function createRenderer(options) {
 
   function render(vnode: any, container: any) {
   // 直接调用 patch 方法
-    patch(vnode, container, null)
+    patch(null, vnode, container, null)
   }
-  function patch(vnode: any, container: any, parentComponent) {
+  function patch(n1, n2: any, container: any, parentComponent) {
   // 判断是 vnode 类型是 component 还是 element
-    const sharpFlag = vnode.sharpFlag
-    switch (vnode.type) {
+    const sharpFlag = n2.sharpFlag
+    switch (n2.type) {
       case Fragment:
-        processFragment(vnode, container, parentComponent)
+        processFragment(n1, n2, container, parentComponent)
         break
       case Text:
-        processText(vnode, container)
+        processText(n1, n2, container)
         break
       default:
         if (sharpFlag & SharpFlags.ELEMENT)
-          processElement(vnode, container, parentComponent)
+          processElement(n1, n2, container, parentComponent)
         else if (sharpFlag & SharpFlags.STATEFUL_COMPONENT)
-          processComponent(vnode, container, parentComponent)
+          processComponent(n1, n2, container, parentComponent)
         break
     }
   }
 
-  function processElement(vnode: any, container, parentComponent) {
-    mountElement(vnode, container, parentComponent)
+  function processElement(n1, n2: any, container, parentComponent) {
+    // 如果 n1 为 null 代表为初始化，直接调用 mountElement 挂载 dom
+    // 否则调用 patch 方法，对新旧 dom 进行比较，进行更新
+    if (n1 === null)
+      mountElement(n2, container, parentComponent)
+    else
+      patchElement(n1, n2, container, parentComponent)
   }
 
-  function processFragment(vnode: any, container: any, parentComponent) {
-    mountChildren(vnode, container, parentComponent)
+  function patchElement(n1, n2, container, parentComponent) {
+    console.log('patchElement')
+    console.log('n1', n1)
+    console.log('n2', n2)
   }
 
-  function processText(vnode: any, container: any) {
-    const { children } = vnode
-    const textNode = vnode.el = document.createTextNode(children)
+  function processFragment(n1, n2: any, container: any, parentComponent) {
+    mountChildren(n2, container, parentComponent)
+  }
+
+  function processText(n1, n2: any, container: any) {
+    const { children } = n2
+    const textNode = n2.el = document.createTextNode(children)
     container.append(textNode)
   }
 
@@ -64,12 +76,12 @@ export function createRenderer(options) {
 
   function mountChildren(vnode: any, container, parentComponent) {
     vnode.children.forEach((v) => {
-      patch(v, container, parentComponent)
+      patch(null, v, container, parentComponent)
     })
   }
 
-  function processComponent(vnode: any, container, parentComponent) {
-    mountComponent(vnode, container, parentComponent)
+  function processComponent(n1, n2: any, container, parentComponent) {
+    mountComponent(n2, container, parentComponent)
   }
 
   function mountComponent(vnode, container, parentComponent) {
@@ -88,15 +100,33 @@ export function createRenderer(options) {
       slots: {},
       provides: parent ? parent.provides : {},
       parent,
+      isMounted: false,
+      subTree: {},
       emit: () => {},
     }
     component.emit = emit.bind(null, component) as any
     return component
   }
   function setupRenderEffect(instance: any, container) {
-    const subTree = instance.render.call(instance.proxy)
-    patch(subTree, container, instance)
-    instance.vnode.el = subTree.el
+    effect(() => {
+      if (!instance.isMounted) {
+        // 当 render 函数中使用了响应式对象，将会此函数收集进依赖
+        // 响应式对象进行更新时将再次执行当前 render 函数
+        const subTree = instance.subTree = instance.render.call(instance.proxy)
+        patch(null, subTree, container, instance)
+        instance.vnode.el = subTree.el
+        instance.isMounted = true
+      }
+      else {
+        console.log('update')
+        const subTree = instance.render.call(instance.proxy)
+        const prevSubTree = instance.subTree
+        console.log('subTree', subTree)
+        console.log('prevSubTree', prevSubTree)
+        instance.subTree = subTree
+        patch(prevSubTree, subTree, container, instance)
+      }
+    })
   }
 
   return {
