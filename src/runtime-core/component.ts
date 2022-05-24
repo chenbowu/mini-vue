@@ -1,3 +1,4 @@
+import { proxyRefs } from '../reactivity'
 import { shallowReadonly } from '../reactivity/reactive'
 import { initProps } from './componentProps'
 import { PublicInstanceProxyHandlers } from './componentPublicInstance'
@@ -34,7 +35,7 @@ function setupStatefulComponent(instance: any) {
 
 function handleSetupResult(instance, setupResult: any) {
   if (setupResult instanceof Object) {
-    instance.setupState = setupResult
+    instance.setupState = proxyRefs(setupResult)
   }
   else if (setupResult instanceof Function) {
     // 待实现
