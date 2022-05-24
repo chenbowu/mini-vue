@@ -50,7 +50,7 @@ function cleanupEffect(effect: ReactiveEffect) {
 }
 
 // 定义一个依赖收集容器
-const targetMap = new Map()
+const targetMap = new WeakMap()
 /**
  * 依赖收集
  * @param target
