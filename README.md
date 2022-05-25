@@ -74,7 +74,7 @@
 
 ### runtime-core 更新
 
-:white_large_square: 更新 element 流程搭建
+:white_check_mark: 更新 element 流程搭建
 
 :white_large_square: 更新 element 的 props
 
