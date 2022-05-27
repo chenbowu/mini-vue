@@ -18,6 +18,17 @@ export const App = {
     const button = h('button', {
       onClick: this.add,
     }, 'Add')
-    return h('div', {}, [text, button])
+    const button1 = h('button', {
+    },
+    'button 1')
+
+    const button2 = h('button', {
+    },
+    'button 2')
+
+    const button3 = h('button', {
+    },
+    'button 3')
+    return h('div', {}, [text, button, button1, button2, button3])
   },
 }
