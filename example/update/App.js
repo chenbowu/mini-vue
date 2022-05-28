@@ -4,31 +4,33 @@ export const App = {
   name: 'App',
   setup() {
     const count = ref(0)
-    const add = () => {
+    const onClick = () => {
       count.value++
       console.log('onclick Add', count.value)
     }
     return {
       count,
-      add,
+      onClick,
     }
   },
   render() {
-    const text = h('p', {}, `count: ${this.count}`)
-    const button = h('button', {
-      onClick: this.add,
-    }, 'Add')
-    const button1 = h('button', {
-    },
-    'button 1')
-
-    const button2 = h('button', {
-    },
-    'button 2')
-
-    const button3 = h('button', {
-    },
-    'button 3')
-    return h('div', {}, [text, button, button1, button2, button3])
+    return h('div', {
+      id: 'root',
+      ...this.props,
+    }, [
+      h('div', {}, `count: ${this.count}`),
+      h('button', {
+        onClick: this.onClick,
+      }, 'click'),
+      h('button', {
+        onClick: this.onChangePropsDemo1,
+      }, 'changeProps - 值改变了 - 修改'),
+      h('button', {
+        onClick: this.onChangePropsDemo2,
+      }, 'changeProps - 值变成了 undefined - 删除'),
+      h('button', {
+        onClick: this.onChangePropsDemo3,
+      }, 'changeProps - key 在新的里面没有了 - 删除'),
+    ])
   },
 }
