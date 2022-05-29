@@ -1,4 +1,5 @@
 import { effect } from '../reactivity/effect'
+import { EMPTY_OBJ } from '../shared'
 import { SharpFlags } from '../shared/SharpFlags'
 import { setupComponent } from './component'
 import { emit } from './componentEmit'
@@ -36,8 +37,8 @@ export function createRenderer(options) {
   }
 
   function processElement(n1, n2: any, container, parentComponent) {
-    // 如果 n1 为 null 代表为初始化，直接调用 mountElement 挂载 dom
-    // 否则调用 patch 方法，对新旧 dom 进行比较，进行更新
+    // 当 n1 为 null 时走初始化逻辑，直接调用 mountElement
+    // 否则调用 patchElement 进行更新逻辑
     if (n1 === null)
       mountElement(n2, container, parentComponent)
     else
@@ -48,6 +49,29 @@ export function createRenderer(options) {
     console.log('patchElement')
     console.log('n1', n1)
     console.log('n2', n2)
+    const oldProps = n1.props || EMPTY_OBJ
+    const newProps = n2.props || EMPTY_OBJ
+    const el = (n2.el = n1.el)
+    patchProps(el, oldProps, newProps)
+  }
+
+  function patchProps(el, oldProps, newProps) {
+    if (oldProps !== newProps) {
+      for (const key in newProps) {
+        const prevProp = oldProps[key]
+        const nextProp = newProps[key]
+        if (prevProp !== nextProp)
+          hostPatchProp(el, key, prevProp, nextProp)
+      }
+
+      // 移除新对象中不存在的 prop
+      if (oldProps !== EMPTY_OBJ) {
+        for (const key in oldProps) {
+          if (!(key in newProps))
+            hostPatchProp(el, key, oldProps[key], null)
+        }
+      }
+    }
   }
 
   function processFragment(n1, n2: any, container: any, parentComponent) {
@@ -62,8 +86,10 @@ export function createRenderer(options) {
 
   function mountElement(vnode: any, container: any, parentComponent) {
     const el = vnode.el = hostCreateElement(vnode.type)
-    for (const key in vnode.props)
-      hostPatchProp(el, key, vnode.props[key])
+    for (const key in vnode.props) {
+      const val = vnode.props[key]
+      hostPatchProp(el, key, null, val)
+    }
 
     const sharpFlag = vnode.sharpFlag
     if (sharpFlag & SharpFlags.TEXT_CHILDREN)

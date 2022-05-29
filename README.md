@@ -76,7 +76,7 @@
 
 :white_check_mark: 更新 element 流程搭建
 
-:white_large_square: 更新 element 的 props
+:white_check_mark: 更新 element 的 props
 
 :white_large_square: 更新 element 的 children
 
