@@ -14,11 +14,11 @@ export function createRenderer(options) {
   } = options
 
   function render(vnode: any, container: any) {
-  // 直接调用 patch 方法
+    // 直接调用 patch 方法
     patch(null, vnode, container, null)
   }
   function patch(n1, n2: any, container: any, parentComponent) {
-  // 判断是 vnode 类型是 component 还是 element
+    // 判断是 vnode 类型是 component 还是 element
     const sharpFlag = n2.sharpFlag
     switch (n2.type) {
       case Fragment:
