@@ -1,12 +1,14 @@
-import { TextToArray } from './TextToArray'
-import { TextToText } from './TextToText'
-import { ArrayToArray } from './ArrayToArray'
-import { ArrayToText } from './ArrayToText'
+import { h, ref } from '../../lib/guide-mini-vue.esm.js'
+import { TextToArray } from './TextToArray.js'
+import { TextToText } from './TextToText.js'
+import { ArrayToArray } from './ArrayToArray.js'
+import { ArrayToText } from './ArrayToText.js'
 
 export const App = {
+  name: 'App',
   setup() {
-
   },
   render() {
+    return h(TextToArray)
   },
 }
