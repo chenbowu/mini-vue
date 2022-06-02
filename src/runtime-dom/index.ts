@@ -5,6 +5,9 @@ function createElement(type) {
   return document.createElement(type)
 }
 
+function patchChild(el, child) {
+}
+
 function patchProp(el, key, prevVal, nextVal) {
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase()
@@ -24,6 +27,7 @@ function insert(el, parent) {
 
 export const renderer: any = createRenderer({
   createElement,
+  patchChild,
   patchProp,
   insert,
 })

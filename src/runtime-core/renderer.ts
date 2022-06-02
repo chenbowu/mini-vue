@@ -9,6 +9,7 @@ import { Fragment, Text } from './vnode'
 export function createRenderer(options) {
   const {
     createElement: hostCreateElement,
+    patchChild: hostPatchChild,
     patchProp: hostPatchProp,
     insert: hostInsert,
   } = options
@@ -52,16 +53,11 @@ export function createRenderer(options) {
     const oldProps = n1.props || EMPTY_OBJ
     const newProps = n2.props || EMPTY_OBJ
     const el = (n2.el = n1.el)
-    patchChildren(n1.children, n2.children)
+    patchChildren(el, n1.children, n2.children)
     patchProps(el, oldProps, newProps)
   }
 
-  function patchChildren(oldChildren, newChildren) {
-    if (Array.isArray(oldChildren)) {
-      if (oldChildren !== newChildren) {
-
-      }
-    }
+  function patchChildren(el, oldChildren, newChildren) {
   }
 
   function patchProps(el, oldProps, newProps) {
