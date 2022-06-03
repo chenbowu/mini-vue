@@ -10,5 +10,6 @@ export const App = {
   },
   render() {
     return h(ArrayToText)
+    // return h(TextToText)
   },
 }
