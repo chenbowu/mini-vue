@@ -5,9 +5,6 @@ function createElement(type) {
   return document.createElement(type)
 }
 
-function patchChild(el, child) {
-}
-
 function patchProp(el, key, prevVal, nextVal) {
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase()
@@ -25,11 +22,15 @@ function insert(el, parent) {
   parent.append(el)
 }
 
+function remove(container, child) {
+  container.removeChild(child.el)
+}
+
 export const renderer: any = createRenderer({
   createElement,
-  patchChild,
   patchProp,
   insert,
+  remove,
 })
 
 export function createApp(...arg) {

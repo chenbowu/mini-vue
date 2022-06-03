@@ -9,9 +9,9 @@ import { Fragment, Text } from './vnode'
 export function createRenderer(options) {
   const {
     createElement: hostCreateElement,
-    patchChild: hostPatchChild,
     patchProp: hostPatchProp,
     insert: hostInsert,
+    remove: hostRemove,
   } = options
 
   function render(vnode: any, container: any) {
@@ -53,11 +53,23 @@ export function createRenderer(options) {
     const oldProps = n1.props || EMPTY_OBJ
     const newProps = n2.props || EMPTY_OBJ
     const el = (n2.el = n1.el)
-    patchChildren(el, n1.children, n2.children)
+    patchChildren(el, n1, n2)
     patchProps(el, oldProps, newProps)
   }
 
-  function patchChildren(el, oldChildren, newChildren) {
+  function patchChildren(container, prevChildren, nextChildren) {
+    if (nextChildren.sharpFlag & SharpFlags.TEXT_CHILDREN) {
+      if (prevChildren.sharpFlag & SharpFlags.ARRAY_CHILDREN) {
+        // remove prevChildren
+        unmountChildren(prevChildren.el, prevChildren.children)
+      }
+    }
+  }
+
+  function unmountChildren(container, children) {
+    children.forEach((child) => {
+      hostRemove(container, child)
+    })
   }
 
   function patchProps(el, oldProps, newProps) {

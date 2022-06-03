@@ -9,6 +9,6 @@ export const App = {
   setup() {
   },
   render() {
-    return h(TextToArray)
+    return h(ArrayToText)
   },
 }
