@@ -9,7 +9,8 @@ export const App = {
   setup() {
   },
   render() {
-    return h(ArrayToText)
+    // return h(ArrayToText)
     // return h(TextToText)
+    return h(ArrayToArray)
   },
 }
