@@ -84,8 +84,9 @@ export function createRenderer(options) {
     }
   }
 
-  function patchKeyedChildren(c1, c2, container, parentComponent, anchor) {
+  function patchKeyedChildren(c1, c2, container, parentComponent, parentAnchor) {
     let i = 0
+    const l2 = c2.length
     let e1 = c1.length - 1
     let e2 = c2.length - 1
 
@@ -99,7 +100,7 @@ export function createRenderer(options) {
       const n2 = c2[i]
       if (isSomeVNodeType(n1, n2))
         // 调用 patch 对比子元素
-        patch(n1, n2, container, parentComponent, anchor)
+        patch(n1, n2, container, parentComponent, null)
       else
         break
       i++
@@ -110,7 +111,7 @@ export function createRenderer(options) {
       const n1 = c1[e1]
       const n2 = c2[e2]
       if (isSomeVNodeType(n1, n2))
-        patch(n1, n2, container, parentComponent, anchor)
+        patch(n1, n2, container, parentComponent, null)
       else
         break
       e1--
@@ -118,17 +119,36 @@ export function createRenderer(options) {
     }
 
     // 新的比老的多
-    // n1: (a b) n2: (a b)
+    // n1: (a b) n2: (a b) c
     // i: 2 e1: 1 e2: 2
-    // n1: (a b) n2: c (a b)
-    // i: 0 e1: -1 e2: 0
+    // n1: (a b) n2: d c (a b)
+    // i: 0 e1: -1 e2: 1
     if (i > e1 && i <= e2) {
-      for (let idx = i; idx <= e2; idx++) {
-        const n2 = c2[idx]
-        // 找出插入锚点
-        const anchor = null
-        patch(null, n2, container, parentComponent, anchor)
+      // 找出插入锚点
+      const nextPos = e2 + 1
+      const anchor = nextPos < l2 ? c2[nextPos].el : parentAnchor
+      while (i <= e2) {
+        patch(null, c2[i], container, parentComponent, anchor)
+        i++
       }
+    }
+    // 4. common sequence + unmount
+    // (a b) c
+    // (a b)
+    // i = 2, e1 = 2, e2 = 1
+    // a (b c)
+    // (b c)
+    // i = 0, e1 = 0, e2 = -1
+    else if (i > e2) {
+      while (i <= e1) {
+        unmount(c1[i])
+        i++
+      }
+    }
+    function unmount(vnode) {
+      const { sharpFlag, el } = vnode
+      if (sharpFlag & SharpFlags.ELEMENT)
+        hostRemove(el)
     }
   }
 
@@ -197,7 +217,7 @@ export function createRenderer(options) {
   function mountComponent(vnode, container, parentComponent) {
     const instance = createComponentInstance(vnode, parentComponent)
     setupComponent(instance)
-    setupRenderEffect(instance, container, null)
+    setupRenderEffect(instance, container)
   }
 
   function createComponentInstance(vnode: any, parent: any) {
@@ -217,13 +237,13 @@ export function createRenderer(options) {
     component.emit = emit.bind(null, component) as any
     return component
   }
-  function setupRenderEffect(instance: any, container, anchor) {
+  function setupRenderEffect(instance: any, container) {
     effect(() => {
       if (!instance.isMounted) {
         // 当 render 函数中使用了响应式对象，将会此函数收集进依赖
         // 响应式对象进行更新时将再次执行当前 render 函数
         const subTree = instance.subTree = instance.render.call(instance.proxy)
-        patch(null, subTree, container, instance, anchor)
+        patch(null, subTree, container, instance, null)
         instance.vnode.el = subTree.el
         instance.isMounted = true
       }
@@ -234,7 +254,7 @@ export function createRenderer(options) {
         console.log('subTree', subTree)
         console.log('prevSubTree', prevSubTree)
         instance.subTree = subTree
-        patch(prevSubTree, subTree, container, instance, anchor)
+        patch(prevSubTree, subTree, container, instance, null)
       }
     })
   }
