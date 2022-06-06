@@ -145,6 +145,13 @@ export function createRenderer(options) {
         i++
       }
     }
+    // 5. unknown sequence
+    // [i ... e1 + 1]: a b [c d e] f g
+    // [i ... e2 + 1]: a b [e d c h] f g
+    // i = 2, e1 = 4, e2 = 5
+    else {
+
+    }
     function unmount(vnode) {
       const { sharpFlag, el } = vnode
       if (sharpFlag & SharpFlags.ELEMENT)
