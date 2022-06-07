@@ -141,7 +141,7 @@ export function createRenderer(options) {
     // i = 0, e1 = 0, e2 = -1
     else if (i > e2) {
       while (i <= e1) {
-        unmount(c1[i])
+        hostRemove(c1[i])
         i++
       }
     }
@@ -151,11 +151,6 @@ export function createRenderer(options) {
     // i = 2, e1 = 4, e2 = 5
     else {
 
-    }
-    function unmount(vnode) {
-      const { sharpFlag, el } = vnode
-      if (sharpFlag & SharpFlags.ELEMENT)
-        hostRemove(el)
     }
   }
 
