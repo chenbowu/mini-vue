@@ -150,7 +150,6 @@ export function createRenderer(options) {
     // [i ... e2 + 1]: a b [e d c h] f g
     // i = 2, e1 = 4, e2 = 5
     else {
-      console.log('test');
     }
   }
 
