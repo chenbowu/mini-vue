@@ -79,7 +79,6 @@ export function createRenderer(options) {
       }
       else {
         // array diff array
-	      // 
         patchKeyedChildren(c1, c2, container, parentComponent, anchor)
       }
     }
