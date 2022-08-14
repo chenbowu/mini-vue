@@ -1,3 +1,4 @@
+import { proxyRefs } from '../reactivity'
 import { effect } from '../reactivity/effect'
 import { EMPTY_OBJ } from '../shared'
 import { SharpFlags } from '../shared/SharpFlags'
@@ -146,10 +147,49 @@ export function createRenderer(options) {
       }
     }
     // 5. unknown sequence
-    // [i ... e1 + 1]: a b [c d e] f g
-    // [i ... e2 + 1]: a b [e d c h] f g
-    // i = 2, e1 = 4, e2 = 5
     else {
+      // [i ... e1 + 1]: a b [c d] f g
+      // [i ... e2 + 1]: a b [e c] f g
+      // i = 2 e1 = 3 e2 = 3
+      const s1 = i
+      const s2 = i
+      const keyToNewIndexMap = new Map()
+      let toBePatched = e2 - s2 + 1
+      let patched = 0
+
+      for (let i = s2; i <= e2; i++) {
+        const nextChild = c2[i]
+        keyToNewIndexMap.set(nextChild.key, i)
+      }
+
+      for (let i = s1; i <= e1; i++) {
+        const prevChild = c1[i]
+        if (patched >= toBePatched) {
+          hostRemove(prevChild.el)
+          continue
+        }
+
+        let newChildIndex
+        if (prevChild.key != null) {
+          newChildIndex = keyToNewIndexMap.get(prevChild.key)
+        }
+        else {
+          for (let i = s2; i <= e2; i++) {
+            if (isSomeVNodeType(prevChild, c2[i])) {
+              newChildIndex = i
+              break
+            }
+          }
+        }
+
+        if (newChildIndex === undefined) {
+          hostRemove(prevChild.el)
+        }
+        else {
+          patch(prevChild, c2[i], container, parentComponent, null)
+          patched++
+        }
+      }
     }
   }
 
