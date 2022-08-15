@@ -154,7 +154,7 @@ export function createRenderer(options) {
       const s1 = i
       const s2 = i
       const keyToNewIndexMap = new Map()
-      let toBePatched = e2 - s2 + 1
+      const toBePatched = e2 - s2 + 1
       let patched = 0
 
       for (let i = s2; i <= e2; i++) {
