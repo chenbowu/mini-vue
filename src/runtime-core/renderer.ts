@@ -1,4 +1,3 @@
-import { proxyRefs } from '../reactivity'
 import { effect } from '../reactivity/effect'
 import { EMPTY_OBJ } from '../shared'
 import { SharpFlags } from '../shared/SharpFlags'
