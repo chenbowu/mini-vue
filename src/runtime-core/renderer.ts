@@ -188,6 +188,7 @@ export function createRenderer(options) {
           patch(prevChild, c2[i], container, parentComponent, null)
           patched++
         }
+
       }
     }
   }
