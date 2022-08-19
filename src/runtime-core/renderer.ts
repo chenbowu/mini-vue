@@ -187,6 +187,7 @@ export function createRenderer(options) {
         else {
           patch(prevChild, c2[i], container, parentComponent, null)
           patched++
+
         }
       }
     }
