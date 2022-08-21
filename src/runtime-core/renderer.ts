@@ -146,13 +146,18 @@ export function createRenderer(options) {
       }
     }
     // 5. unknown sequence
+    // 中间对比
     else {
       // [i ... e1 + 1]: a b [c d] f g
       // [i ... e2 + 1]: a b [e c] f g
       // i = 2 e1 = 3 e2 = 3
       const s1 = i
       const s2 = i
+      // 定义一个映射表，用来保存新节点中存在 key 的元素
+      // 后面在比对节点的时候就可以直接从映射表中查找是否存在，达到优化的效果
       const keyToNewIndexMap = new Map()
+      let moved = false
+      let maxNewIndexSoFar = 0
       const toBePatched = e2 - s2 + 1
       let patched = 0
 
@@ -161,32 +166,81 @@ export function createRenderer(options) {
         keyToNewIndexMap.set(nextChild.key, i)
       }
 
+      // 初始化 从新 index 映射到老 index
+      const newIndexToOldIndexMap = new Array(toBePatched)
+      // 将映射表初始化为 0
+      // 后面处理的时候，如果发现是 0 的话，那么就说明新值在老的里面不存在
+      for (let i = 0; i < toBePatched; i++)
+        newIndexToOldIndexMap[i] = 0
+
+      // 处理老节点存在/不存在新节点中的时候
       for (let i = s1; i <= e1; i++) {
         const prevChild = c1[i]
+        // 优化点 当前所处理的节点数量大于所需处理的节点数量(新节点中间部分)时
+        // 证明后续元素不存在新节点中，可以直接进行移除
         if (patched >= toBePatched) {
           hostRemove(prevChild.el)
           continue
         }
 
-        let newChildIndex
+        // 查找老节点在新节点中的索引
+        let newIndex
         if (prevChild.key != null) {
-          newChildIndex = keyToNewIndexMap.get(prevChild.key)
+          // 存在 key 时，通过 key 获取所在新节点的索引
+          newIndex = keyToNewIndexMap.get(prevChild.key)
         }
         else {
+          // 不存在 key 时，通过遍历老节点，获取所在新节点的索引位置
           for (let i = s2; i <= e2; i++) {
             if (isSomeVNodeType(prevChild, c2[i])) {
-              newChildIndex = i
+              newIndex = i
               break
             }
           }
         }
 
-        if (newChildIndex === undefined) {
+        // 老节点在新节点中不存在时，移除该节点
+        if (newIndex === undefined) {
+          console.log('老节点不存在新节点中')
           hostRemove(prevChild.el)
         }
         else {
+          // 新老节点都存在
+          console.log('新老节点都存在')
+          // 把新节点的索引和老节点的索引建立映射关系
+          // i + 1 是应为 i 有可能是 0（0 的话会被认为新节点在老节点中不存在）
+          newIndexToOldIndexMap[newIndex - s2] = i + 1
+          if (newIndex >= maxNewIndexSoFar) {
+            maxNewIndexSoFar = newIndex
+          } else {
+            moved = true
+          }
+
           patch(prevChild, c2[i], container, parentComponent, null)
           patched++
+        }
+      }
+
+      // 插入新节点以及移动
+      const increasingNewIndexSequence = getSequence(newIndexToOldIndexMap)
+      let j = increasingNewIndexSequence.length
+
+      // 遍历中间新节点
+      for (let i = toBePatched; i >= 0; i--) {
+        const nextIndex = i + s2
+        const nextChild = c2[nextIndex]
+
+        const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : parentAnchor
+
+        if (newIndexToOldIndexMap[i] === 0) {
+          // 说明新节点在老节点中不存在 需要创建
+          patch(null, nextChild, container, parentComponent, anchor)
+        } else if (moved) {
+          if (j < 0 || increasingNewIndexSequence[j] !== i) {
+            hostInsert(nextChild.el, container, anchor)
+          } else {
+            j--
+          }
         }
       }
     }
