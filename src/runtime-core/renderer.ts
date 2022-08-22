@@ -210,11 +210,10 @@ export function createRenderer(options) {
           // 把新节点的索引和老节点的索引建立映射关系
           // i + 1 是应为 i 有可能是 0（0 的话会被认为新节点在老节点中不存在）
           newIndexToOldIndexMap[newIndex - s2] = i + 1
-          if (newIndex >= maxNewIndexSoFar) {
+          if (newIndex >= maxNewIndexSoFar)
             maxNewIndexSoFar = newIndex
-          } else {
+          else
             moved = true
-          }
 
           patch(prevChild, c2[i], container, parentComponent, null)
           patched++
@@ -235,12 +234,12 @@ export function createRenderer(options) {
         if (newIndexToOldIndexMap[i] === 0) {
           // 说明新节点在老节点中不存在 需要创建
           patch(null, nextChild, container, parentComponent, anchor)
-        } else if (moved) {
-          if (j < 0 || increasingNewIndexSequence[j] !== i) {
+        }
+        else if (moved) {
+          if (j < 0 || increasingNewIndexSequence[j] !== i)
             hostInsert(nextChild.el, container, anchor)
-          } else {
+          else
             j--
-          }
         }
       }
     }
