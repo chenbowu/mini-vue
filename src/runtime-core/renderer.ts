@@ -241,7 +241,6 @@ export function createRenderer(options) {
           else
             j--
         }
-
       }
     }
   }
