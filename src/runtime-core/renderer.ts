@@ -240,6 +240,7 @@ export function createRenderer(options) {
             hostInsert(nextChild.el, container, anchor)
           else
             j--
+
         }
       }
     }
