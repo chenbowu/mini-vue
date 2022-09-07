@@ -240,6 +240,7 @@ export function createRenderer(options) {
             hostInsert(nextChild.el, container, anchor)
           else
             j--
+
         }
       }
     }
@@ -325,7 +326,7 @@ export function createRenderer(options) {
       parent,
       isMounted: false,
       subTree: {},
-      emit: () => {},
+      emit: () => { },
     }
     component.emit = emit.bind(null, component) as any
     return component
