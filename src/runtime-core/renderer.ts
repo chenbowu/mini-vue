@@ -342,10 +342,13 @@ export function createRenderer(options) {
       }
       else {
         console.log('update')
+        // 调用组件的 render 函数获取 vnode 对象，将 this 指向组件实例的代理对象
         const subTree = instance.render.call(instance.proxy)
+        // 记录老组件 vnode
         const prevSubTree = instance.subTree
         console.log('subTree', subTree)
         console.log('prevSubTree', prevSubTree)
+        // 将新 vnode 保存到组件实例对象上
         instance.subTree = subTree
         patch(prevSubTree, subTree, container, instance, null)
       }
@@ -375,16 +378,16 @@ function getSequence(arr: number[]): number[] {
       v = result.length - 1
       while (u < v) {
         c = (u + v) >> 1
-        if (arr[result[c]] < arrI) {
+        if (arr[result[c]] < arrI)
           u = c + 1
-        } else {
+
+        else
           v = c
-        }
       }
       if (arrI < arr[result[u]]) {
-        if (u > 0) {
+        if (u > 0)
           p[i] = result[u - 1]
-        }
+
         result[u] = i
       }
     }
