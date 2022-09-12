@@ -86,9 +86,9 @@
 
 :white_check_mark: 更新 element 的 children - 双端对比 diff 算法 （3）
 
-:white_large_square: 学习尤大解决 bug 的处理方式
+:white_check_mark: 学习尤大解决 bug 的处理方式
 
-:white_large_square: 实现组件更新功能
+:white_check_mark: 实现组件更新功能
 
 :white_large_square: 实现 nextTick 功能
 
