@@ -90,7 +90,7 @@
 
 :white_check_mark: 实现组件更新功能
 
-:white_large_square: 实现 nextTick 功能
+:white_check_mark: 实现 nextTick 功能
 
 ### compiler-core
 
