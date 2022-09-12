@@ -5,6 +5,7 @@ import { setupComponent } from './component'
 import { emit } from './componentEmit'
 import { shouldUpdateComponent } from './componentUpdateUtils'
 import { createAppAPI } from './createApp'
+import { queueJobs } from './scheduler'
 import { Fragment, Text } from './vnode'
 
 export function createRenderer(options) {
@@ -381,13 +382,18 @@ export function createRenderer(options) {
         instance.subTree = subTree
         patch(prevSubTree, subTree, container, instance, null)
       }
+    }, {
+      scheduler() {
+        console.log('update - scheduler')
+        queueJobs(instance.update)
+      },
     })
   }
 
-  function updateComponentPreRender(instance, nextVnode) {
-    instance.vnode = nextVnode
+  function updateComponentPreRender(instance, nextVNode) {
+    instance.vnode = nextVNode
     instance.next = null
-    instance.props = nextVnode.props
+    instance.props = nextVNode.props
   }
 
   return {
