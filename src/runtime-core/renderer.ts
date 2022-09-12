@@ -3,6 +3,7 @@ import { EMPTY_OBJ } from '../shared'
 import { SharpFlags } from '../shared/SharpFlags'
 import { setupComponent } from './component'
 import { emit } from './componentEmit'
+import { shouldUpdateComponent } from './componentUpdateUtils'
 import { createAppAPI } from './createApp'
 import { Fragment, Text } from './vnode'
 
@@ -304,11 +305,27 @@ export function createRenderer(options) {
   }
 
   function processComponent(n1, n2: any, container, parentComponent) {
-    mountComponent(n2, container, parentComponent)
+    if (n1 == null)
+      mountComponent(n2, container, parentComponent)
+    else
+      updateComponent(n1, n2)
+  }
+
+  function updateComponent(n1, n2) {
+    // 实现组件更新实际就是调用再次调用 render 函数
+    // TODO Why 如何实现
+    if (shouldUpdateComponent(n1, n2)) {
+      // 组件实例(component)是在 mount 时进行赋值的
+      // 所以此时 n2 中 component 为空, 将 n1 的赋值给 n2
+      const instance = n2.component = n1.component
+      // 将新 vnode 挂载到组件到实例上
+      instance.next = n2
+      instance.update()
+    }
   }
 
   function mountComponent(vnode, container, parentComponent) {
-    const instance = createComponentInstance(vnode, parentComponent)
+    const instance = vnode.component = createComponentInstance(vnode, parentComponent)
     setupComponent(instance)
     setupRenderEffect(instance, container)
   }
@@ -317,6 +334,7 @@ export function createRenderer(options) {
     console.log(parent)
     const component = {
       vnode,
+      next: null,
       type: vnode.type,
       setupState: {},
       props: {},
@@ -330,8 +348,11 @@ export function createRenderer(options) {
     component.emit = emit.bind(null, component) as any
     return component
   }
+
   function setupRenderEffect(instance: any, container) {
-    effect(() => {
+    // effect 会返回一个 runner，执行 runner 将会执行这个依赖函数
+    // 将 runner 挂在到实例上，用于组件更新时调用
+    instance.update = effect(() => {
       if (!instance.isMounted) {
         // 当 render 函数中使用了响应式对象，将会此函数收集进依赖
         // 响应式对象进行更新时将再次执行当前 render 函数
@@ -342,6 +363,14 @@ export function createRenderer(options) {
       }
       else {
         console.log('update')
+        // next 是新节点, vnode 是旧节点
+        const { next, vnode } = instance
+        if (next) {
+          next.el = vnode.el
+          // 此时组件实例上的数据还是旧的，需要对数据进行更新
+          updateComponentPreRender(instance, next)
+        }
+
         // 调用组件的 render 函数获取 vnode 对象，将 this 指向组件实例的代理对象
         const subTree = instance.render.call(instance.proxy)
         // 记录老组件 vnode
@@ -353,6 +382,12 @@ export function createRenderer(options) {
         patch(prevSubTree, subTree, container, instance, null)
       }
     })
+  }
+
+  function updateComponentPreRender(instance, nextVnode) {
+    instance.vnode = nextVnode
+    instance.next = null
+    instance.props = nextVnode.props
   }
 
   return {
