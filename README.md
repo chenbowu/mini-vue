@@ -80,11 +80,11 @@
 
 :white_check_mark: 更新 element 的 children
 
-:white_large_square: 更新 element 的 children - 双端对比 diff 算法（1）
+:white_check_mark: 更新 element 的 children - 双端对比 diff 算法（1）
 
-:white_large_square: 更新 element 的 children - 双端对比 diff 算法 （2）
+:white_check_mark: 更新 element 的 children - 双端对比 diff 算法 （2）
 
-:white_large_square: 更新 element 的 children - 双端对比 diff 算法 （3）
+:white_check_mark: 更新 element 的 children - 双端对比 diff 算法 （3）
 
 :white_large_square: 学习尤大解决 bug 的处理方式
 
