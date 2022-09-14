@@ -94,11 +94,11 @@
 
 ### compiler-core
 
-:white_large_square: 编译模块概述
+:white_check_mark: 编译模块概述
 
-:white_large_square: 实现解析插值功能
+:white_check_mark: 实现解析插值功能
 
-:white_large_square: 实现解析 element 标签
+:white_check_mark: 实现解析 element 标签
 
 :white_large_square: 实现解析 text 功能
 
