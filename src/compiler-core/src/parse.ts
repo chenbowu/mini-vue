@@ -20,9 +20,32 @@ function parseChildren(context: ParserContext) {
     if (/[a-z]/i.test(context.source[1]))
       node = parseElement(context)
   }
+  else {
+    node = parseText(context)
+  }
 
   nodes.push(node)
   return nodes
+}
+
+function parseText(context: ParserContext) {
+  const content = parseTextData(context, context.source.length)
+  return {
+    type: NodeTypes.TEXT,
+    content,
+  }
+}
+
+/**
+ * Get text data with given length from the current location
+ * @param context
+ * @param length
+ * @returns
+ */
+function parseTextData(context: ParserContext, length: number): string {
+  const rawText = context.source.substring(0, length)
+  advanceBy(context, length)
+  return rawText
 }
 
 function parseElement(context: ParserContext) {
@@ -54,9 +77,9 @@ function parseInterpolation(context: ParserContext) {
   const closeIndex = context.source.indexOf(closeDelimiter, openDelimiter.length)
   advanceBy(context, openDelimiter.length)
   const rawContentLength = closeIndex - openDelimiter.length
-  const rawContent = context.source.substring(0, rawContentLength)
+  const rawContent = parseTextData(context, rawContentLength)
   const content = rawContent.trim()
-  advanceBy(context, rawContentLength + closeDelimiter.length)
+  advanceBy(context, closeDelimiter.length)
 
   return {
     type: NodeTypes.INTERPOLATION,

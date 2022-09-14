@@ -100,7 +100,7 @@
 
 :white_check_mark: 实现解析 element 标签
 
-:white_large_square: 实现解析 text 功能
+:white_check_mark: 实现解析 text 功能
 
 :white_large_square: 实现解析三种联合类型 template
 
