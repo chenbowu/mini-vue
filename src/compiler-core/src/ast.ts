@@ -1,4 +1,5 @@
 export enum NodeTypes {
   INTERPOLATION,
+  ELEMENT,
   SIMPLE_EXPRESSION,
 }
