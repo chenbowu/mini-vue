@@ -7,29 +7,46 @@ const enum TagType {
 
 export function baseParse(content: string) {
   const context: ParserContext = createParserContext(content)
-  return createRoot(parseChildren(context))
+  return createRoot(parseChildren(context, ''))
 }
 
-function parseChildren(context: ParserContext) {
+function parseChildren(context: ParserContext, parentTag: string) {
   const nodes: any = []
   let node
-  if (context.source.startsWith('{{')) {
-    node = parseInterpolation(context)
-  }
-  else if (context.source.startsWith('<')) {
-    if (/[a-z]/i.test(context.source[1]))
-      node = parseElement(context)
-  }
-  else {
-    node = parseText(context)
-  }
+  while (!isEnd(context, parentTag)) {
+    if (context.source.startsWith('{{')) {
+      node = parseInterpolation(context)
+    }
+    else if (context.source.startsWith('<')) {
+      if (/[a-z]/i.test(context.source[1]))
+        node = parseElement(context)
+    }
+    else {
+      node = parseText(context)
+    }
 
-  nodes.push(node)
+    nodes.push(node)
+  }
   return nodes
 }
 
+function isEnd(context: ParserContext, parentTag: string) {
+  if (context.source.startsWith(`</${parentTag}>`))
+    return true
+  return !context.source
+}
+
 function parseText(context: ParserContext) {
-  const content = parseTextData(context, context.source.length)
+  // 限定文本截取范围默认为所有
+  let endIndex = context.source.length
+  // 文本截取结束标识
+  const endToken = '{{'
+  // 判断文本中是否存在 token 标识，存在则文本截取到此 token 为止, 否则截取到文本末尾.
+  const index = context.source.indexOf(endToken)
+  if (index !== -1)
+    endIndex = index
+
+  const content = parseTextData(context, endIndex)
   return {
     type: NodeTypes.TEXT,
     content,
@@ -49,9 +66,9 @@ function parseTextData(context: ParserContext, length: number): string {
 }
 
 function parseElement(context: ParserContext) {
-  const element = parseTag(context, TagType.Start)
+  const element: any = parseTag(context, TagType.Start)
+  element.children = parseChildren(context, element.tag)
   parseTag(context, TagType.End)
-  console.log(context.source)
   return element
 }
 
