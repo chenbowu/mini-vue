@@ -7,19 +7,19 @@ const enum TagType {
 
 export function baseParse(content: string) {
   const context: ParserContext = createParserContext(content)
-  return createRoot(parseChildren(context, ''))
+  return createRoot(parseChildren(context, []))
 }
 
-function parseChildren(context: ParserContext, parentTag: string) {
+function parseChildren(context: ParserContext, ancestors: any[]) {
   const nodes: any = []
   let node
-  while (!isEnd(context, parentTag)) {
+  while (!isEnd(context, ancestors)) {
     if (context.source.startsWith('{{')) {
       node = parseInterpolation(context)
     }
     else if (context.source.startsWith('<')) {
       if (/[a-z]/i.test(context.source[1]))
-        node = parseElement(context)
+        node = parseElement(context, ancestors)
     }
     else {
       node = parseText(context)
@@ -30,10 +30,19 @@ function parseChildren(context: ParserContext, parentTag: string) {
   return nodes
 }
 
-function isEnd(context: ParserContext, parentTag: string) {
-  if (context.source.startsWith(`</${parentTag}>`))
-    return true
+function isEnd(context: ParserContext, ancestors: any[]) {
+  if (context.source.startsWith('</')) {
+    for (let i = 0; i < ancestors.length; i++) {
+      const tag = ancestors[i].tag
+      if (startsWithEndTagOpen(context, tag))
+        return true
+    }
+  }
   return !context.source
+}
+
+function startsWithEndTagOpen(context, tag: string) {
+  return (context.source.startsWith('</') && context.source.slice(2, 2 + tag.length).toLowerCase() === tag.toLowerCase())
 }
 
 function parseText(context: ParserContext) {
@@ -66,10 +75,18 @@ function parseTextData(context: ParserContext, length: number): string {
   return rawText
 }
 
-function parseElement(context: ParserContext) {
+function parseElement(context: ParserContext, ancestors: any[]) {
   const element: any = parseTag(context, TagType.Start)
-  element.children = parseChildren(context, element.tag)
-  parseTag(context, TagType.End)
+  ancestors.push(element)
+  element.children = parseChildren(context, ancestors)
+  ancestors.pop()
+  const tag = element.tag
+
+  if (startsWithEndTagOpen(context, tag))
+    parseTag(context, TagType.End)
+  else
+    throw new Error(`缺少结束标签: ${tag}`)
+
   return element
 }
 
