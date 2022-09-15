@@ -40,12 +40,13 @@ function parseText(context: ParserContext) {
   // 限定文本截取范围默认为所有
   let endIndex = context.source.length
   // 文本截取结束标识
-  const endToken = '{{'
+  const endToken = ['</', '{{']
   // 判断文本中是否存在 token 标识，存在则文本截取到此 token 为止, 否则截取到文本末尾.
-  const index = context.source.indexOf(endToken)
-  if (index !== -1)
-    endIndex = index
-
+  for (let i = 0; i < endToken.length; i++) {
+    const index = context.source.indexOf(endToken[i])
+    if (index !== -1 && index < endIndex)
+      endIndex = index
+  }
   const content = parseTextData(context, endIndex)
   return {
     type: NodeTypes.TEXT,
