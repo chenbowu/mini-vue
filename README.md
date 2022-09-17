@@ -102,7 +102,7 @@
 
 :white_check_mark: 实现解析 text 功能
 
-:white_large_square: 实现解析三种联合类型 template
+:white_check_mark: 实现解析三种联合类型 template
 
 :white_large_square: parse 的实现原理&有限状态机
 
