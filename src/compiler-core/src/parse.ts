@@ -31,14 +31,15 @@ function parseChildren(context: ParserContext, ancestors: any[]) {
 }
 
 function isEnd(context: ParserContext, ancestors: any[]) {
-  if (context.source.startsWith('</')) {
+  const s = context.source
+  if (s.startsWith('</')) {
     for (let i = 0; i < ancestors.length; i++) {
       const tag = ancestors[i].tag
       if (startsWithEndTagOpen(context, tag))
         return true
     }
   }
-  return !context.source
+  return !s
 }
 
 function startsWithEndTagOpen(context, tag: string) {
