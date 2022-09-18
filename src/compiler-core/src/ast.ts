@@ -3,4 +3,5 @@ export enum NodeTypes {
   ELEMENT,
   SIMPLE_EXPRESSION,
   TEXT,
+  ROOT,
 }
