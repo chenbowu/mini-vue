@@ -1,5 +1,4 @@
 import { NodeTypes } from './ast'
-import { TO_DISPLAY_STRING, helperMapName } from './runtimeHelpers'
 
 export function transform(root, options = {}) {
   const context = createTransformContext(root, options)
@@ -13,12 +12,11 @@ function traverseNode(node, context) {
   const { nodeTransforms } = context
   for (let i = 0; i < nodeTransforms.length; i++) {
     const transform = nodeTransforms[i]
-    transform(node)
+    transform(node, context)
   }
 
   switch (node.type) {
     case NodeTypes.INTERPOLATION:
-      context.helper(helperMapName[TO_DISPLAY_STRING])
       break
     case NodeTypes.ROOT:
     case NodeTypes.ELEMENT:
