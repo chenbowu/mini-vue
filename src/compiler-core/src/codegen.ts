@@ -1,3 +1,4 @@
+import { isString } from '../../shared'
 import { NodeTypes } from './ast'
 import { CREATE_ELEMENT_VNODE, TO_DISPLAY_STRING, helperMapName } from './runtimeHelpers'
 
@@ -35,6 +36,9 @@ function genNode(node, context) {
       break
     case NodeTypes.ELEMENT:
       genElement(node, context)
+      break
+    case NodeTypes.COMPOUND_EXPRESSION:
+      genCompoundExpression(node, context)
       break
     default:
       break
@@ -79,5 +83,39 @@ function genExpression(node: any, context: any) {
 
 function genElement(node, context) {
   const { push, helper } = context
-  push(`_${helper(CREATE_ELEMENT_VNODE)}("div", null, "hi," + _toDisplayString(_ctx.message), 1)`)
+  const { tag, props, children } = node
+  push(`${helper(CREATE_ELEMENT_VNODE)}(`)
+  genNodeList(genNullableArgs([tag, props, children]), context)
+  push(')')
+}
+
+function genNodeList(nodes, context) {
+  const { push } = context
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i]
+    if (isString(node))
+      push(node)
+    else
+      genNode(node, context)
+
+    // 参数之间需要用逗号分隔
+    if (i < nodes.length - 1)
+      push(', ')
+  }
+}
+
+function genNullableArgs(args: unknown[]) {
+  // 把为 falsy 的值都替换成 "null"
+  return args.map(arg => arg || 'null')
+}
+
+function genCompoundExpression(node, context) {
+  const children = node.children
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i]
+    if (isString(child))
+      context.push(child)
+    else
+      genNode(child, context)
+  }
 }

@@ -4,6 +4,7 @@ import { transform } from '../src/transform'
 import { transformElement } from '../src/transforms/transformElement'
 import { transformExpression } from '../src/transforms/transformExpression'
 import { transformInterpolation } from '../src/transforms/transformInterpolation'
+import { transformText } from '../src/transforms/transformText'
 
 describe('codegen', () => {
   it('string', () => {
@@ -22,10 +23,10 @@ describe('codegen', () => {
     expect(code).toMatchSnapshot()
   })
 
-  it('compound', () => {
+  it('element', () => {
     const ast = baseParse('<div>hi,{{message}}</div>')
     transform(ast, {
-      nodeTransforms: [transformExpression, transformInterpolation, transformElement],
+      nodeTransforms: [transformExpression, transformInterpolation, transformElement, transformText],
     })
     const { code } = generate(ast)
     expect(code).toMatchSnapshot()
