@@ -104,14 +104,14 @@
 
 :white_check_mark: 实现解析三种联合类型 template
 
-:white_large_square: parse 的实现原理&有限状态机
+:white_check_mark: parse 的实现原理&有限状态机
 
-:white_large_square: 实现 transform 功能
+:white_check_mark: 实现 transform 功能
 
-:white_large_square: 实现代码生成 string 类型
+:white_check_mark: 实现代码生成 string 类型
 
-:white_large_square: 实现代码生成插值类型
+:white_check_mark: 实现代码生成插值类型
 
-:white_large_square: 实现代码生成三种联合类型
+:white_check_mark: 实现代码生成三种联合类型
 
 :white_large_square: 实现编译 template 成 render 函数
