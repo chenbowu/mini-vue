@@ -114,4 +114,4 @@
 
 :white_check_mark: 实现代码生成三种联合类型
 
-:white_large_square: 实现编译 template 成 render 函数
+:white_check_mark: 实现编译 template 成 render 函数

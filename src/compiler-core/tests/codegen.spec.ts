@@ -24,7 +24,7 @@ describe('codegen', () => {
   })
 
   it('element', () => {
-    const ast = baseParse('<div>hi,{{message}}</div>')
+    const ast = baseParse('<div>hi,{{message}}{{count}}</div>')
     transform(ast, {
       nodeTransforms: [transformExpression, transformInterpolation, transformElement, transformText],
     })

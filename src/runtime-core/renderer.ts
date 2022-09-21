@@ -357,7 +357,8 @@ export function createRenderer(options) {
       if (!instance.isMounted) {
         // 当 render 函数中使用了响应式对象，将会此函数收集进依赖
         // 响应式对象进行更新时将再次执行当前 render 函数
-        const subTree = instance.subTree = instance.render.call(instance.proxy)
+        const { proxy } = instance
+        const subTree = instance.subTree = instance.render.call(proxy, proxy)
         patch(null, subTree, container, instance, null)
         instance.vnode.el = subTree.el
         instance.isMounted = true
@@ -365,7 +366,7 @@ export function createRenderer(options) {
       else {
         console.log('update')
         // next 是新节点, vnode 是旧节点
-        const { next, vnode } = instance
+        const { next, vnode, proxy } = instance
         if (next) {
           next.el = vnode.el
           // 此时组件实例上的数据还是旧的，需要对数据进行更新
@@ -373,7 +374,7 @@ export function createRenderer(options) {
         }
 
         // 调用组件的 render 函数获取 vnode 对象，将 this 指向组件实例的代理对象
-        const subTree = instance.render.call(instance.proxy)
+        const subTree = instance.render.call(proxy, proxy)
         // 记录老组件 vnode
         const prevSubTree = instance.subTree
         console.log('subTree', subTree)

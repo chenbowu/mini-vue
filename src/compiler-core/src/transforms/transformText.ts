@@ -16,11 +16,11 @@ export function transformText(node) {
                   type: NodeTypes.COMPOUND_EXPRESSION,
                   children: [child],
                 }
-                children[i] = currentContainer
-                currentContainer.children.push(' + ', next)
-                children.splice(j, 1)
-                j--
               }
+              children[i] = currentContainer
+              currentContainer.children.push(' + ', next)
+              children.splice(j, 1)
+              j--
             }
             else {
               currentContainer = undefined
