@@ -115,3 +115,5 @@
 :white_check_mark: 实现代码生成三种联合类型
 
 :white_check_mark: 实现编译 template 成 render 函数
+
+:: 实现 monorepo & 使用 vitest 替换 jest
